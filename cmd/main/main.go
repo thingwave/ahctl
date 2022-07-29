@@ -12,7 +12,23 @@ import (
   "crypto/x509"
   "crypto/tls"
   "net/http"
+  "encoding/json"
 )
+
+type SystemList struct {
+  Data []System `json:"data"`
+  Count int `json:"count"`
+}
+
+type System struct {
+    Id int `json:"id"`
+    SystemName string `json:"systemName"`
+    Address string `json:"address"`
+    Port int `json:"port"`
+    AuthenticationInfo string `json:"authenticationInfo,omitempy"`
+    CreatedAt string `json:"createdAt"`
+    UpdatedAt string `json:"updatedAt"`
+}
 
 func main() {
   command := flag.String("cmd", "test-sr", "Eclipse Arrowhead command to execute")
@@ -28,9 +44,10 @@ func main() {
     return
   }
 
-  if *command != "test-sr" {
-      fmt.Printf("Error: unknown command '%s'\n", *command)
-      return
+  if *command == "echo" {
+  } else if *command == "get-all-systems" {
+  } else {
+    return
   }
 
   if *ca != "" && *cert != "" && *key != "" {
@@ -80,16 +97,31 @@ func main() {
     }
 
   } else {
-	fmt.Println("Running insecure mode....\n")
-	client := http.Client{Timeout: 10 * time.Second}
+	  fmt.Println("Running insecure mode....\n")
+	  client := http.Client{Timeout: 10 * time.Second}
 
-  if *command == "test-sr" {
-  	data, err := getData(client, *targetUri + "/echo")
+    if *command == "echo" {
+  	  data, err := getData(client, *targetUri + "/echo")
 	    if err == nil {
-	        fmt.Println(data)
+	      fmt.Println(data)
+	    }
+    } else if *command == "get-all-systems" {
+      data, err := getData(client, *targetUri + "/mgmt/systems?direction=ASC&sort_field=id")
+	    if err == nil {
+	      //fmt.Println(data)
+
+        var response SystemList
+        json.Unmarshal([]byte(data), &response)
+        //fmt.Print(response)
+
+        empJSON, _ := json.MarshalIndent(response, "", "  ")
+        fmt.Println(string(empJSON))
+
 	    }
     }
+
   }
+
 }
 
 func getData(client http.Client, uri string) (string, error) {
