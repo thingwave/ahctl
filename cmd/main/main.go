@@ -76,6 +76,13 @@ func main() {
       fmt.Println(data)
     }
 
+  } else {
+	fmt.Println("Running insecure mode....\n")
+	client := http.Client{Timeout: 10 * time.Second}
+	data, err := getData(client, *targetUri)
+	  if err == nil {
+	      fmt.Println(data)
+	  }
   }
 }
 
