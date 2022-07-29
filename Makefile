@@ -1,5 +1,5 @@
 all:
-	go build -o cmd/ahctl cmd/main/main.go
+	go build -o cmd/ahctl cmd/main/main.go cmd/main/datamodels.go
 
 urun:
 	./cmd/ahctl --sr="http://127.0.0.1:8443/serviceregistry" --cmd=test-sr

@@ -15,35 +15,9 @@ import (
   "encoding/json"
 )
 
-type SystemList struct {
-  Data []System `json:"data"`
-  Count int `json:"count"`
-}
-
-type System struct {
-    Id int `json:"id"`
-    SystemName string `json:"systemName"`
-    Address string `json:"address"`
-    Port int `json:"port"`
-    AuthenticationInfo string `json:"authenticationInfo,omitempy"`
-    CreatedAt string `json:"createdAt"`
-    UpdatedAt string `json:"updatedAt"`
-}
-
-type ServiceDefinitionList struct {
-  Data []ServiceDefinition `json:"data"`
-  Count int `json:"count"`
-}
-
-type ServiceDefinition struct {
-  Id int `json:"id"`
-  ServiceDefinition string `json:"serviceDefinition"`
-  CreatedAt string `json:"createdAt"`
-  UpdatedAt string `json:"updatedAt"`
-}
 
 func main() {
-  command := flag.String("cmd", "test-sr", "Eclipse Arrowhead command to execute")
+  command := flag.String("cmd", "echo", "Eclipse Arrowhead command to execute")
   targetUri := flag.String("sr", "https://127.0.0.1:8443/serviceregistry", "Service Registry URI")
   ca := flag.String("cafile", "", "Root CA PEM file")
   cert := flag.String("cert", "", "Client certificate PEM file")
@@ -103,7 +77,7 @@ func main() {
 
     client := http.Client{Transport: t, Timeout: 10 * time.Second}
 
-    if *command == "test-sr" {
+    if *command == "echo" {
       data, err := getData(client, *targetUri + "/echo")
       if err == nil {
         fmt.Println(data)
