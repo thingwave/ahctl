@@ -16,7 +16,7 @@ import (
 
 func main() {
   command := flag.String("cmd", "test-sr", "Eclipse Arrowhead command to execute")
-  targetUri := flag.String("sr", "https://127.0.0.1:8443/serviceregistry/echo", "Service registry URI")
+  targetUri := flag.String("sr", "https://127.0.0.1:8443/serviceregistry", "Service Registry URI")
   ca := flag.String("cafile", "", "Root CA PEM file")
   cert := flag.String("cert", "", "Client certificate PEM file")
   key := flag.String("key", "", "Client certificate key PEM file")
@@ -71,18 +71,24 @@ func main() {
     }
 
     client := http.Client{Transport: t, Timeout: 10 * time.Second}
-    data, err := getData(client, *targetUri)
-    if err == nil {
-      fmt.Println(data)
+
+    if *command == "test-sr" {
+      data, err := getData(client, *targetUri + "/echo")
+      if err == nil {
+        fmt.Println(data)
+      }
     }
 
   } else {
 	fmt.Println("Running insecure mode....\n")
 	client := http.Client{Timeout: 10 * time.Second}
-	data, err := getData(client, *targetUri)
-	  if err == nil {
-	      fmt.Println(data)
-	  }
+
+  if *command == "test-sr" {
+  	data, err := getData(client, *targetUri + "/echo")
+	    if err == nil {
+	        fmt.Println(data)
+	    }
+    }
   }
 }
 
