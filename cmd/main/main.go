@@ -30,6 +30,18 @@ type System struct {
     UpdatedAt string `json:"updatedAt"`
 }
 
+type ServiceDefinitionList struct {
+  Data []ServiceDefinition `json:"data"`
+  Count int `json:"count"`
+}
+
+type ServiceDefinition struct {
+  Id int `json:"id"`
+  ServiceDefinition string `json:"serviceDefinition"`
+  CreatedAt string `json:"createdAt"`
+  UpdatedAt string `json:"updatedAt"`
+}
+
 func main() {
   command := flag.String("cmd", "test-sr", "Eclipse Arrowhead command to execute")
   targetUri := flag.String("sr", "https://127.0.0.1:8443/serviceregistry", "Service Registry URI")
@@ -46,7 +58,9 @@ func main() {
 
   if *command == "echo" {
   } else if *command == "get-all-systems" {
+    } else if *command == "get-all-services" {
   } else {
+    fmt.Printf("Unknown command: %s\n", *command)
     return
   }
 
@@ -97,7 +111,7 @@ func main() {
     }
 
   } else {
-	  fmt.Println("Running insecure mode....\n")
+	  fmt.Println("Running unsecure mode....\n")
 	  client := http.Client{Timeout: 10 * time.Second}
 
     if *command == "echo" {
@@ -108,18 +122,24 @@ func main() {
     } else if *command == "get-all-systems" {
       data, err := getData(client, *targetUri + "/mgmt/systems?direction=ASC&sort_field=id")
 	    if err == nil {
-	      //fmt.Println(data)
-
         var response SystemList
         json.Unmarshal([]byte(data), &response)
-        //fmt.Print(response)
 
         empJSON, _ := json.MarshalIndent(response, "", "  ")
         fmt.Println(string(empJSON))
-
 	    }
-    }
+    } else if *command == "get-all-services" {
+      data, err := getData(client, *targetUri + "/mgmt/services?direction=ASC&sort_field=id")
+	    if err == nil {
+	      //fmt.Println(data)
 
+        var response ServiceDefinitionList
+        json.Unmarshal([]byte(data), &response)
+
+        empJSON, _ := json.MarshalIndent(response, "", "  ")
+        fmt.Println(string(empJSON))
+      }
+    }
   }
 
 }
