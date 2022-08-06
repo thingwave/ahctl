@@ -13,6 +13,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -86,10 +88,11 @@ func main() {
 		}
 
 	} else {
-		fmt.Println("Running unsecure mode....\n")
+		fmt.Println("Running unsecure mode ...")
 		client := http.Client{Timeout: 10 * time.Second}
 
 		if *command == "sr-echo" { // GET to serviceregistry/echo
+			fmt.Printf("Calling %s\n", *targetUri+"/echo")
 			data, err := getData(client, *targetUri+"/echo")
 			if err != nil {
 				fmt.Printf("Could not connect to '%s'\n", *targetUri+"/echo")
@@ -135,15 +138,15 @@ func main() {
 			req, err := http.NewRequest("POST", *targetUri+"/query", bytes.NewBuffer(reqJSON))
 			req.Header.Set("Content-Type", "application/json")
 
-			client := &http.Client{}
+			//client := &http.Client{}
 			resp, err := client.Do(req)
 			if err != nil {
 				panic(err)
 			}
 			defer resp.Body.Close()
 
-			fmt.Printf("response Status: '%s'\n", resp.Status)
-			if resp.Status == "200 " {
+			fmt.Printf("Response statusCode: '%d'\n", resp.StatusCode)
+			if resp.StatusCode == 200 {
 				//fmt.Println("response Headers:", resp.Header)
 				body, _ := ioutil.ReadAll(resp.Body)
 				if *verbose != "false" {
@@ -154,7 +157,16 @@ func main() {
 				if err := json.Unmarshal(body, &serviceQueryResponse); err != nil {
 					panic(err)
 				}
-				fmt.Printf("%+v\n", serviceQueryResponse.ServiceQueryData[0])
+				//fmt.Printf("%+v\n", serviceQueryResponse.ServiceQueryData[0])
+
+				target := "http://" + serviceQueryResponse.ServiceQueryData[0].Provider.Address + ":" + strconv.Itoa(serviceQueryResponse.ServiceQueryData[0].Provider.Port) + serviceQueryResponse.ServiceQueryData[0].ServiceUri
+				target = strings.Replace(target, "/proxy", "/echo", 1)
+
+				fmt.Printf("Calling %s\n", target)
+				data, err := getData(client, target)
+				if err == nil {
+					fmt.Println(data)
+				}
 			}
 		}
 	}

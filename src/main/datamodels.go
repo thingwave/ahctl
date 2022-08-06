@@ -44,23 +44,24 @@ type ServiceQueryResponse struct {
 }
 
 type ServiceQueryEntry struct {
-	Id            int64              `json:"id"`
-	EndOfValidity *string            `json:"endOfValidity,omitempty"`
-	Interfaces    []InterfaceEntry   `json:"interfaces"`
-	Metadata      *map[string]string `json:"metadata,omitempty"`
-	Provider      ProviderDTO        `json:"provider"`
-	Secure        string             `json:"secure"`
-	/*"serviceDefinition": {
-	      "createdAt": "string",
-	      "id": 0,
-	      "serviceDefinition": "string",
-	      "updatedAt": "string"
-	    },
-	],*/
-	ServiceUri string `json:"serviceUri"`
-	CreatedAt  string `json:"createdAt"`
-	UpdatedAt  string `json:"updatedAt"`
-	Version    *int   `json:"version,omitempty"`
+	Id                int64                `json:"id"`
+	EndOfValidity     *string              `json:"endOfValidity,omitempty"`
+	Interfaces        []InterfaceEntry     `json:"interfaces"`
+	Metadata          *map[string]string   `json:"metadata,omitempty"`
+	Provider          ProviderDTO          `json:"provider"`
+	Secure            string               `json:"secure"`
+	ServiceDefinition ServiceDefinitionDTO `json:"serviceDefinition"`
+	ServiceUri        string               `json:"serviceUri"`
+	CreatedAt         string               `json:"createdAt"`
+	UpdatedAt         string               `json:"updatedAt"`
+	Version           *int                 `json:"version,omitempty"`
+}
+
+type ServiceDefinitionDTO struct {
+	Id                int64  `json:"id"`
+	ServiceDefinition string `json:"serviceDefinition"`
+	CreatedAt         string `json:"createdAt"`
+	UpdatedAt         string `json:"updatedAt"`
 }
 
 type InterfaceEntry struct {
