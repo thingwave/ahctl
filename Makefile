@@ -1,13 +1,13 @@
 all:
-	go build -o cmd/ahctl cmd/main/main.go cmd/main/datamodels.go
+	go build -o ahctl src/main/main.go src/main/datamodels.go
 
 urun:
-	./cmd/ahctl --sr="http://127.0.0.1:8443/serviceregistry" --cmd=test-sr
+	./ahctl --sr="http://127.0.0.1:8443/serviceregistry" --cmd=echo
 
 srun:
-	./cmd/ahctl --cmd=test-sr --cafile=/tmp/truststore.pem --cert=/tmp/service_registry.pem --key=/tmp/service_registry.key
+	./ahctl --sr="https://127.0.0.1:8443/serviceregistry" --cmd=echo --cafile=/tmp/truststore.pem --cert=/tmp/service_registry.pem --key=/tmp/service_registry.key
 
 clean:
-	rm ./cmd/ahctl
+	rm ./ahctl
 
 

@@ -90,7 +90,10 @@ func main() {
 
     if *command == "echo" {
   	  data, err := getData(client, *targetUri + "/echo")
-	    if err == nil {
+	    if err != nil {
+        fmt.Printf("Cound not connect to '%s'\n", *targetUri + "/echo")
+        return
+	    } else {
 	      fmt.Println(data)
 	    }
     } else if *command == "get-all-systems" {
@@ -121,10 +124,15 @@ func main() {
 func getData(client http.Client, uri string) (string, error) {
   request, err := http.NewRequest(http.MethodGet, uri, nil)
   if err != nil {
-    log.Fatalf("request failed : %v", err)
+    //log.Fatalf("request failed : %v", err)
+    return "", err
   }
 
   resp, err := client.Do(request)
+  if err != nil {
+    //log.Fatalf("request failed : %v", err)
+    return "", err
+  }
   defer resp.Body.Close()
 
   body, err := ioutil.ReadAll(resp.Body)
