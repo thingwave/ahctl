@@ -41,6 +41,8 @@ func main() {
 		return
 	}
 
+	var client http.Client
+
 	if *ca != "" && *cert != "" && *key != "" {
 		ok, _ := fileExists(*ca)
 		if !ok {
@@ -78,7 +80,7 @@ func main() {
 			},
 		}
 
-		client := http.Client{Transport: t, Timeout: 5 * time.Second}
+		client = http.Client{Transport: t, Timeout: 5 * time.Second}
 
 		if *command == "srecho" {
 			fmt.Printf("Calling %s\n", *targetUri+"/echo")
@@ -90,89 +92,89 @@ func main() {
 
 	} else {
 		fmt.Println("Running unsecure mode ...")
-		client := http.Client{Timeout: 10 * time.Second}
+		client = http.Client{Timeout: 10 * time.Second}
+	}
 
-		if *command == "sr-echo" { // GET to serviceregistry/echo
-			fmt.Printf("Calling %s\n", *targetUri+"/echo")
-			data, err := getData(client, *targetUri+"/echo")
-			if err != nil {
-				fmt.Printf("Could not connect to '%s'\n", *targetUri+"/echo")
-				return
-			} else {
-				fmt.Println(string(data))
-			}
-		} else if *command == "get-all-systems" {
-			data, err := getData(client, *targetUri+"/mgmt/systems?direction=ASC&sort_field=id")
-			if err == nil {
-				var response SystemList
-				json.Unmarshal([]byte(data), &response)
+	if *command == "sr-echo" { // GET to serviceregistry/echo
+		fmt.Printf("Calling %s\n", *targetUri+"/echo")
+		data, err := getData(client, *targetUri+"/echo")
+		if err != nil {
+			fmt.Printf("Could not connect to '%s'\n", *targetUri+"/echo")
+			return
+		} else {
+			fmt.Println(string(data))
+		}
+	} else if *command == "get-all-systems" {
+		data, err := getData(client, *targetUri+"/mgmt/systems?direction=ASC&sort_field=id")
+		if err == nil {
+			var response SystemList
+			json.Unmarshal([]byte(data), &response)
 
-				empJSON, _ := json.MarshalIndent(response, "", "  ")
-				fmt.Println(string(empJSON))
-			}
-		} else if *command == "get-all-services" {
-			data, err := getData(client, *targetUri+"/mgmt/services?direction=ASC&sort_field=id")
-			if err == nil {
-				//fmt.Println(data)
+			empJSON, _ := json.MarshalIndent(response, "", "  ")
+			fmt.Println(string(empJSON))
+		}
+	} else if *command == "get-all-services" {
+		data, err := getData(client, *targetUri+"/mgmt/services?direction=ASC&sort_field=id")
+		if err == nil {
+			//fmt.Println(data)
 
-				var response ServiceDefinitionList
-				json.Unmarshal([]byte(data), &response)
+			var response ServiceDefinitionList
+			json.Unmarshal([]byte(data), &response)
 
-				empJSON, _ := json.MarshalIndent(response, "", "  ")
-				fmt.Println(string(empJSON))
-			}
-		} else if *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" { // GET to orchestrator/echo
-			//} else if *command == "au-echo" { // GET to authorization/echo
-			//} else if *command == "dm-echo" { // GET to datamanager/echo
-			var sreq ServiceQueryRequest
-			if *command == "or-echo" {
-				sreq.ServiceDefinitionRequirement = "proxy" //XXX
-			} else if *command == "au-echo" {
-				sreq.ServiceDefinitionRequirement = "proxy" //XXX
-			} else if *command == "dm-echo" {
-				sreq.ServiceDefinitionRequirement = "proxy"
-			}
-			sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"}
-			var minVerReq int
-			sreq.MinVersionRequirement = &minVerReq
-			*sreq.MinVersionRequirement = 1
+			empJSON, _ := json.MarshalIndent(response, "", "  ")
+			fmt.Println(string(empJSON))
+		}
+	} else if *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" { // GET to orchestrator/echo
+		//} else if *command == "au-echo" { // GET to authorization/echo
+		//} else if *command == "dm-echo" { // GET to datamanager/echo
+		var sreq ServiceQueryRequest
+		if *command == "or-echo" {
+			sreq.ServiceDefinitionRequirement = "proxy" //XXX
+		} else if *command == "au-echo" {
+			sreq.ServiceDefinitionRequirement = "proxy" //XXX
+		} else if *command == "dm-echo" {
+			sreq.ServiceDefinitionRequirement = "proxy"
+		}
+		sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"}
+		var minVerReq int
+		sreq.MinVersionRequirement = &minVerReq
+		*sreq.MinVersionRequirement = 1
 
-			reqJSON, _ := json.MarshalIndent(sreq, "", "  ")
+		reqJSON, _ := json.MarshalIndent(sreq, "", "  ")
+		if *verbose != "false" {
+			fmt.Println(string(reqJSON))
+		}
+
+		req, err := http.NewRequest("POST", *targetUri+"/query", bytes.NewBuffer(reqJSON))
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := client.Do(req)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+
+		fmt.Printf("Response statusCode: '%d'\n", resp.StatusCode)
+		if resp.StatusCode == 200 {
+			//fmt.Println("response Headers:", resp.Header)
+			body, _ := ioutil.ReadAll(resp.Body)
 			if *verbose != "false" {
-				fmt.Println(string(reqJSON))
+				fmt.Println("response Body:", string(body))
 			}
 
-			req, err := http.NewRequest("POST", *targetUri+"/query", bytes.NewBuffer(reqJSON))
-			req.Header.Set("Content-Type", "application/json")
-
-			resp, err := client.Do(req)
+			serviceQueryResponse, err := ReadData2Object[ServiceQueryResponse](body)
 			if err != nil {
 				panic(err)
 			}
-			defer resp.Body.Close()
+			//fmt.Printf("%+v\n", serviceQueryResponse.ServiceQueryData[0])
 
-			fmt.Printf("Response statusCode: '%d'\n", resp.StatusCode)
-			if resp.StatusCode == 200 {
-				//fmt.Println("response Headers:", resp.Header)
-				body, _ := ioutil.ReadAll(resp.Body)
-				if *verbose != "false" {
-					fmt.Println("response Body:", string(body))
-				}
+			target := "http://" + serviceQueryResponse.ServiceQueryData[0].Provider.Address + ":" + strconv.Itoa(serviceQueryResponse.ServiceQueryData[0].Provider.Port) + serviceQueryResponse.ServiceQueryData[0].ServiceUri
+			target = strings.Replace(target, "/proxy", "/echo", 1)
 
-				serviceQueryResponse, err := ReadData2Object[ServiceQueryResponse](body)
-				if err != nil {
-					panic(err)
-				}
-				//fmt.Printf("%+v\n", serviceQueryResponse.ServiceQueryData[0])
-
-				target := "http://" + serviceQueryResponse.ServiceQueryData[0].Provider.Address + ":" + strconv.Itoa(serviceQueryResponse.ServiceQueryData[0].Provider.Port) + serviceQueryResponse.ServiceQueryData[0].ServiceUri
-				target = strings.Replace(target, "/proxy", "/echo", 1)
-
-				fmt.Printf("Calling %s\n", target)
-				data, err := getData(client, target)
-				if err == nil {
-					fmt.Println(string(data))
-				}
+			fmt.Printf("Calling %s\n", target)
+			data, err := getData(client, target)
+			if err == nil {
+				fmt.Println(string(data))
 			}
 		}
 	}
