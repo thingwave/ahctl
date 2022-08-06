@@ -78,13 +78,13 @@ func main() {
 			},
 		}
 
-		client := http.Client{Transport: t, Timeout: 10 * time.Second}
+		client := http.Client{Transport: t, Timeout: 5 * time.Second}
 
 		if *command == "srecho" {
 			fmt.Printf("Calling %s\n", *targetUri+"/echo")
 			data, err := getData(client, *targetUri+"/echo")
 			if err == nil {
-				fmt.Println(data)
+				fmt.Println(string(data))
 			}
 		}
 
@@ -99,7 +99,7 @@ func main() {
 				fmt.Printf("Could not connect to '%s'\n", *targetUri+"/echo")
 				return
 			} else {
-				fmt.Println(data)
+				fmt.Println(string(data))
 			}
 		} else if *command == "get-all-systems" {
 			data, err := getData(client, *targetUri+"/mgmt/systems?direction=ASC&sort_field=id")
@@ -121,11 +121,17 @@ func main() {
 				empJSON, _ := json.MarshalIndent(response, "", "  ")
 				fmt.Println(string(empJSON))
 			}
-		} else if *command == "or-echo" { // GET to orchestrator/echo
-		} else if *command == "au-echo" { // GET to authorization/echo
-		} else if *command == "dm-echo" { // GET to datamanager/echo
+		} else if *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" { // GET to orchestrator/echo
+			//} else if *command == "au-echo" { // GET to authorization/echo
+			//} else if *command == "dm-echo" { // GET to datamanager/echo
 			var sreq ServiceQueryRequest
-			sreq.ServiceDefinitionRequirement = "proxy"
+			if *command == "or-echo" {
+				sreq.ServiceDefinitionRequirement = "proxy" //XXX
+			} else if *command == "au-echo" {
+				sreq.ServiceDefinitionRequirement = "proxy" //XXX
+			} else if *command == "dm-echo" {
+				sreq.ServiceDefinitionRequirement = "proxy"
+			}
 			sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"}
 			var minVerReq int
 			sreq.MinVersionRequirement = &minVerReq
@@ -153,8 +159,8 @@ func main() {
 					fmt.Println("response Body:", string(body))
 				}
 
-				var serviceQueryResponse ServiceQueryResponse
-				if err := json.Unmarshal(body, &serviceQueryResponse); err != nil {
+				serviceQueryResponse, err := ReadData2Object[ServiceQueryResponse](body)
+				if err != nil {
 					panic(err)
 				}
 				//fmt.Printf("%+v\n", serviceQueryResponse.ServiceQueryData[0])
@@ -165,7 +171,7 @@ func main() {
 				fmt.Printf("Calling %s\n", target)
 				data, err := getData(client, target)
 				if err == nil {
-					fmt.Println(data)
+					fmt.Println(string(data))
 				}
 			}
 		}
@@ -173,26 +179,34 @@ func main() {
 
 }
 
+func ReadData2Object[T any](bytes []byte) (*T, error) {
+	out := new(T)
+	if err := json.Unmarshal(bytes, out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 //
-func getData(client http.Client, uri string) (string, error) {
+func getData(client http.Client, uri string) ([]byte, error) {
 	request, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	resp, err := client.Do(request)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("final error: %v\n", err)
-		return "", err
+		return nil, err
 	}
 
-	return string(body), nil
+	return body, nil
 }
 
 func fileExists(fileName string) (bool, error) {
