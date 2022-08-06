@@ -80,7 +80,8 @@ func main() {
 
 		client := http.Client{Transport: t, Timeout: 10 * time.Second}
 
-		if *command == "echo" {
+		if *command == "srecho" {
+			fmt.Printf("Calling %s\n", *targetUri+"/echo")
 			data, err := getData(client, *targetUri+"/echo")
 			if err == nil {
 				fmt.Println(data)
@@ -173,27 +174,26 @@ func main() {
 
 }
 
+//
 func getData(client http.Client, uri string) (string, error) {
 	request, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
-		//log.Fatalf("request failed : %v", err)
 		return "", err
 	}
 
 	resp, err := client.Do(request)
 	if err != nil {
-		//log.Fatalf("request failed : %v", err)
 		return "", err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
-	if err == nil {
-		return string(body), nil
-	} else {
+	if err != nil {
 		fmt.Printf("final error: %v\n", err)
 		return "", err
 	}
+
+	return string(body), nil
 }
 
 func fileExists(fileName string) (bool, error) {
