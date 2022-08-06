@@ -139,7 +139,6 @@ func main() {
 			req, err := http.NewRequest("POST", *targetUri+"/query", bytes.NewBuffer(reqJSON))
 			req.Header.Set("Content-Type", "application/json")
 
-			//client := &http.Client{}
 			resp, err := client.Do(req)
 			if err != nil {
 				panic(err)
