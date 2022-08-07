@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -27,6 +28,12 @@ func main() {
 	verbose := flag.String("verbose", "false", "Makes client more verbose whens set to true")
 	flag.Parse()
 
+	_, err := url.ParseRequestURI(*targetUri)
+	if err != nil {
+		fmt.Printf("Illegal URI: %s\n", *targetUri)
+		return
+	}
+
 	if (*ca != "" && (*cert == "" || *key == "")) || (*cert != "" && (*ca == "" || *key == "")) || (*key != "" && (*cert == "" || *ca == "")) {
 		fmt.Println("Error: missing arguments!")
 		fmt.Println("Use 'ahctl --help' to see usage.")
@@ -36,6 +43,7 @@ func main() {
 	if *command == "sr-echo" || *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" {
 	} else if *command == "get-all-systems" {
 	} else if *command == "get-all-services" {
+	} else if *command == "get-grouped" {
 	} else {
 		fmt.Printf("Unknown command: %s\n", *command)
 		return
@@ -91,7 +99,7 @@ func main() {
 		}
 
 	} else {
-		fmt.Println("Running unsecure mode ...")
+		//fmt.Println("Running unsecure mode ...")
 		client = http.Client{Timeout: 10 * time.Second}
 	}
 
@@ -108,7 +116,7 @@ func main() {
 		data, err := getData(client, *targetUri+"/mgmt/systems?direction=ASC&sort_field=id")
 		if err == nil {
 			var response SystemList
-			json.Unmarshal([]byte(data), &response)
+			json.Unmarshal(data, &response)
 
 			empJSON, _ := json.MarshalIndent(response, "", "  ")
 			fmt.Println(string(empJSON))
@@ -119,7 +127,18 @@ func main() {
 			//fmt.Println(data)
 
 			var response ServiceDefinitionList
-			json.Unmarshal([]byte(data), &response)
+			json.Unmarshal(data, &response)
+
+			empJSON, _ := json.MarshalIndent(response, "", "  ")
+			fmt.Println(string(empJSON))
+		}
+	} else if *command == "get-grouped" {
+		data, err := getData(client, *targetUri+"/mgmt/grouped")
+		if err == nil {
+			//fmt.Println(string(data))
+
+			var response GroupedDTO
+			json.Unmarshal(data, &response)
 
 			empJSON, _ := json.MarshalIndent(response, "", "  ")
 			fmt.Println(string(empJSON))

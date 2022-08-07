@@ -81,3 +81,28 @@ type ProviderDTO struct {
 	CreatedAt          string             `json:"createdAt"`
 	UpdatedAt          string             `json:"updatedAt"`
 }
+
+type GroupedDTO struct {
+	ServicesGroupedBySystems []ServicesGroupedBySystem `json:"servicesGroupedBySystems"`
+	//ServicesGroupedByServiceDefinition []xxx `json:"servicesGroupedByServiceDefinition"`
+	AutoCompleteData AutoCompleteDataDTO `json:"autoCompleteData"`
+}
+
+type ServicesGroupedBySystem struct {
+	SystemId   int64               `json:"systemId"`
+	SystemName string              `json:"systemName"`
+	Address    string              `json:"address"`
+	Port       int                 `json:"port"`
+	Services   []ServiceQueryEntry `json:"services"`
+}
+
+type AutoCompleteDataDTO struct {
+	ServiceList   []EntryDTO    `json:"serviceList"`
+	SystemList    []ProviderDTO `json:"systemList"`
+	InterfaceList []EntryDTO    `json:"interfaceList"`
+}
+
+type EntryDTO struct {
+	Id    int64  `json:"id"`
+	Value string `json:"value"`
+}
