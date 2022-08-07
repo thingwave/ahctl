@@ -22,10 +22,14 @@ import (
 const (
 	MAJOR int = 0
 	MINOR int = 1
-	REV   int = 2
+	REV   int = 3
 )
 
 func main() {
+	os.Exit(mainApp())
+}
+
+func mainApp() int {
 	version := flag.Bool("version", false, "Prints the version")
 	command := flag.String("cmd", "sr-echo", "Eclipse Arrowhead command to execute")
 	targetUri := flag.String("sr", "https://127.0.0.1:8443/serviceregistry", "Service Registry URI")
@@ -37,19 +41,19 @@ func main() {
 
 	if *version == true {
 		fmt.Printf("%d.%d.%d\n", MAJOR, MINOR, REV)
-		return
+		return 0
 	}
 
 	_, err := url.ParseRequestURI(*targetUri)
 	if err != nil {
 		fmt.Printf("Illegal URI: %s\n", *targetUri)
-		return
+		return -1
 	}
 
 	if (*ca != "" && (*cert == "" || *key == "")) || (*cert != "" && (*ca == "" || *key == "")) || (*key != "" && (*cert == "" || *ca == "")) {
 		fmt.Println("Error: missing arguments!")
 		fmt.Println("Use 'ahctl --help' to see usage.")
-		return
+		return -1
 	}
 
 	if *command == "sr-echo" || *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" {
@@ -58,7 +62,7 @@ func main() {
 	} else if *command == "get-grouped" {
 	} else {
 		fmt.Printf("Unknown command: %s\n", *command)
-		return
+		return -1
 	}
 
 	var client http.Client
@@ -67,17 +71,17 @@ func main() {
 		ok, _ := fileExists(*ca)
 		if !ok {
 			fmt.Printf("Error: ca file %s does not exist\n", *ca)
-			return
+			return -1
 		}
 		ok, _ = fileExists(*cert)
 		if !ok {
 			fmt.Printf("Error: certificate file %s does not exist\n", *cert)
-			return
+			return -1
 		}
 		ok, _ = fileExists(*key)
 		if !ok {
 			fmt.Printf("Error: key file %s does not exist\n", *key)
-			return
+			return -1
 		}
 
 		caCert, err := ioutil.ReadFile(*ca)
@@ -120,7 +124,7 @@ func main() {
 		data, err := getData(client, *targetUri+"/echo")
 		if err != nil {
 			fmt.Printf("Could not connect to '%s'\n", *targetUri+"/echo")
-			return
+			return -1
 		} else {
 			fmt.Println(string(data))
 		}
@@ -210,6 +214,7 @@ func main() {
 		}
 	}
 
+	return 0
 }
 
 func ReadData2Object[T any](bytes []byte) (*T, error) {
