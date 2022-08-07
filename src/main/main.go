@@ -19,7 +19,14 @@ import (
 	"time"
 )
 
+const (
+	MAJOR int = 0
+	MINOR int = 1
+	REV   int = 2
+)
+
 func main() {
+	version := flag.Bool("version", false, "Prints the version")
 	command := flag.String("cmd", "sr-echo", "Eclipse Arrowhead command to execute")
 	targetUri := flag.String("sr", "https://127.0.0.1:8443/serviceregistry", "Service Registry URI")
 	ca := flag.String("cafile", "", "Root CA PEM file")
@@ -27,6 +34,11 @@ func main() {
 	key := flag.String("key", "", "Client certificate key PEM file")
 	verbose := flag.String("verbose", "false", "Makes client more verbose whens set to true")
 	flag.Parse()
+
+	if *version == true {
+		fmt.Printf("%d.%d.%d\n", MAJOR, MINOR, REV)
+		return
+	}
 
 	_, err := url.ParseRequestURI(*targetUri)
 	if err != nil {

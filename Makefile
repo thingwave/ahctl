@@ -7,6 +7,11 @@ urun:
 srun:
 	./ahctl --sr="https://127.0.0.1:8443/serviceregistry" --cmd=echo --cafile=/tmp/truststore.pem --cert=/tmp/service_registry.pem --key=/tmp/service_registry.key
 
+deb:
+	cp ahctl packages/usr/local/bin/
+	dpkg-deb --build packages
+	mv packages.deb ahctl_amd64.deb
+
 clean:
 	rm ./ahctl
 

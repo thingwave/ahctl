@@ -1,0 +1,6 @@
+Package: ahctl
+Version: 0.1
+Maintainer: Jens Eliasson
+Architecture: amd64
+Homepage: https://github.com/thingwave/ahctl
+Description: Eclipse Arrowhead Control application
