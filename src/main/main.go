@@ -36,7 +36,7 @@ func mainApp() int {
 	ca := flag.String("cafile", "", "Root CA PEM file")
 	cert := flag.String("cert", "", "Client certificate PEM file")
 	key := flag.String("key", "", "Client certificate key PEM file")
-	verbose := flag.String("verbose", "false", "Makes client more verbose whens set to true")
+	verbose := flag.Bool("verbose", false, "Makes client more verbose whens set to true")
 	flag.Parse()
 
 	if *version == true {
@@ -176,7 +176,7 @@ func mainApp() int {
 		*sreq.MinVersionRequirement = 1
 
 		reqJSON, _ := json.MarshalIndent(sreq, "", "  ")
-		if *verbose != "false" {
+		if *verbose != false {
 			fmt.Println(string(reqJSON))
 		}
 
@@ -193,7 +193,7 @@ func mainApp() int {
 		if resp.StatusCode == 200 {
 			//fmt.Println("response Headers:", resp.Header)
 			body, _ := ioutil.ReadAll(resp.Body)
-			if *verbose != "false" {
+			if *verbose != false {
 				fmt.Println("response Body:", string(body))
 			}
 
