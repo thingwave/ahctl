@@ -8,6 +8,7 @@ srun:
 	./ahctl --sr="https://127.0.0.1:8443/serviceregistry" --cmd=sr-echo --cafile=/tmp/truststore.pem --cert=/tmp/service_registry.pem --key=/tmp/service_registry.key
 
 deb:
+	mkdir -p packages/usr/local/bin
 	cp ahctl packages/usr/local/bin/
 	dpkg-deb --build packages
 	mv packages.deb ahctl_amd64.deb
