@@ -171,18 +171,17 @@ func mainApp() int {
 			empJSON, _ := json.MarshalIndent(response, "", "  ")
 			fmt.Println(string(empJSON))
 		}
-	} else if *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" { // GET to orchestrator/echo
-		//} else if *command == "au-echo" { // GET to authorization/echo
-		//} else if *command == "dm-echo" { // GET to datamanager/echo
+	} else if *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" {
 		var sreq ServiceQueryRequest
 		if *command == "or-echo" {
-			sreq.ServiceDefinitionRequirement = "proxy" //XXX
+			sreq.ServiceDefinitionRequirement = "orchestration-service"
 		} else if *command == "au-echo" {
-			sreq.ServiceDefinitionRequirement = "proxy" //XXX
+			sreq.ServiceDefinitionRequirement = "auth-public-key"
 		} else if *command == "dm-echo" {
 			sreq.ServiceDefinitionRequirement = "proxy"
 		}
-		sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"}
+
+		//sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"} //XXX add support for SECURE
 		var minVerReq int
 		sreq.MinVersionRequirement = &minVerReq
 		*sreq.MinVersionRequirement = 1
@@ -201,7 +200,7 @@ func mainApp() int {
 		}
 		defer resp.Body.Close()
 
-		fmt.Printf("Response statusCode: '%d'\n", resp.StatusCode)
+		//fmt.Printf("Response statusCode: %d\n", resp.StatusCode)
 		if resp.StatusCode == 200 {
 			//fmt.Println("response Headers:", resp.Header)
 			body, _ := ioutil.ReadAll(resp.Body)
@@ -213,10 +212,21 @@ func mainApp() int {
 			if err != nil {
 				panic(err)
 			}
-			//fmt.Printf("%+v\n", serviceQueryResponse.ServiceQueryData[0])
+			//fmt.Printf("%+v\n", serviceQueryResponse)
+
+			if len(serviceQueryResponse.ServiceQueryData) == 0 {
+				fmt.Printf("System not available!\n")
+				return -2
+			}
 
 			target := "http://" + serviceQueryResponse.ServiceQueryData[0].Provider.Address + ":" + strconv.Itoa(serviceQueryResponse.ServiceQueryData[0].Provider.Port) + serviceQueryResponse.ServiceQueryData[0].ServiceUri
-			target = strings.Replace(target, "/proxy", "/echo", 1)
+			if *command == "or-echo" {
+				target = strings.Replace(target, "/orchestration", "/echo", 1)
+			} else if *command == "au-echo" {
+				target = strings.Replace(target, "/publickey", "/echo", 1)
+			} else if *command == "dm-echo" {
+				target = strings.Replace(target, "/proxy", "/echo", 1)
+			}
 
 			fmt.Printf("Calling %s\n", target)
 			data, err := getData(client, target)
