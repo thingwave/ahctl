@@ -1,6 +1,9 @@
 all:
 	go build -o ahctl src/main/main.go src/main/datamodels.go
 
+all-arm64:
+	env GOOS=linux GOARCH=arm GOARM=5 go build -o ahctl src/main/main.go src/main/datamodels.go
+
 urun:
 	./ahctl --sr="http://127.0.0.1:8443/serviceregistry" --cmd=sr-echo
 
@@ -12,8 +15,7 @@ deb:
 	cp ahctl packages/usr/local/bin/
 	dpkg-deb --build packages
 	mv packages.deb ahctl_amd64.deb
+	#mv packages.deb ahctl_arm64.deb
 
 clean:
 	rm ./ahctl
-
-
