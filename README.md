@@ -13,7 +13,7 @@ ahctl$ make all
 
 
 ### ARM64
-To compile for 64-bit ARM based platforms such as Raspbeery Pi, issue the following command:
+To compile for 64-bit ARM based platforms such as Raspberry Pi, issue the following command:
 ```
 ahctl$ make all-arm64
 ```
@@ -21,7 +21,7 @@ ahctl$ make all-arm64
 ## Usage
 
 ### ServiceRegistry availability
-To test if the ServiceRegistry is available, issue the following command (change the IP address and http/https dependning on the configuration):
+To test if the ServiceRegistry is available, issue the following command (change the IP address and http/https depending on the local cloud's configuration):
 ```
 ahctl$ ./ahctl  --sr=http://192.168.11.22:8443/serviceregistry
 Calling http://192.168.11.22:8443/serviceregistry/echo
