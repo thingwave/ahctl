@@ -219,7 +219,11 @@ func mainApp() int {
 				return -2
 			}
 
-			target := "http://" + serviceQueryResponse.ServiceQueryData[0].Provider.Address + ":" + strconv.Itoa(serviceQueryResponse.ServiceQueryData[0].Provider.Port) + serviceQueryResponse.ServiceQueryData[0].ServiceUri //XXX: check if http or https!!!
+      proto := "http"
+      if  strings.HasPrefix(*targetUri, "https") {
+        proto = "https"
+      }
+			target := proto + "://" + serviceQueryResponse.ServiceQueryData[0].Provider.Address + ":" + strconv.Itoa(serviceQueryResponse.ServiceQueryData[0].Provider.Port) + serviceQueryResponse.ServiceQueryData[0].ServiceUri //XXX: check if http or https!!!
 			if *command == "or-echo" {
 				target = strings.Replace(target, "/orchestration", "/echo", 1)
 			} else if *command == "au-echo" {
