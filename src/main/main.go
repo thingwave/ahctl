@@ -33,8 +33,8 @@ import (
 
 const (
 	MAJOR int = 0
-	MINOR int = 1
-	REV   int = 3
+	MINOR int = 2
+	REV   int = 1
 )
 
 func main() {
@@ -119,8 +119,8 @@ func mainApp() int {
 		client = http.Client{Transport: t, Timeout: 5 * time.Second}
 
 		if *command == "srecho" {
-			fmt.Printf("Calling %s\n", *targetUri+"/echo")
-			data, err := getData(client, *targetUri+"/echo")
+			fmt.Printf("Calling %s\n", *targetUri + "/echo")
+			data, err := getData(client, *targetUri + "/echo")
 			if err == nil {
 				fmt.Println(string(data))
 			}
@@ -219,7 +219,7 @@ func mainApp() int {
 				return -2
 			}
 
-			target := "http://" + serviceQueryResponse.ServiceQueryData[0].Provider.Address + ":" + strconv.Itoa(serviceQueryResponse.ServiceQueryData[0].Provider.Port) + serviceQueryResponse.ServiceQueryData[0].ServiceUri
+			target := "http://" + serviceQueryResponse.ServiceQueryData[0].Provider.Address + ":" + strconv.Itoa(serviceQueryResponse.ServiceQueryData[0].Provider.Port) + serviceQueryResponse.ServiceQueryData[0].ServiceUri //XXX: check if http or https!!!
 			if *command == "or-echo" {
 				target = strings.Replace(target, "/orchestration", "/echo", 1)
 			} else if *command == "au-echo" {

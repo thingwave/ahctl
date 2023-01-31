@@ -1,4 +1,4 @@
-# Eclipse Arrowhead Control app
+# Eclipse Arrowhead Control application
 
 ## Introduction
 Eclipse Arrowhead Control app, or ahctl, is a small helper tool to interact with an Eclipse Arrowhead local cloud. It can be used to check to availability of several core systems, as well as list systems and services in the ServiceRegistry.
@@ -11,9 +11,8 @@ To compile for 64-bit Intel based platforms, issue the following command:
 ahctl$ make all
 ```
 
-
 ### ARM64
-To compile for 64-bit ARM based platforms such as Raspberry Pi, issue the following command:
+To compile for 64-bit ARM based platforms (such as Raspberry Pi), issue the following command:
 ```
 ahctl$ make all-arm64
 ```
@@ -21,7 +20,7 @@ ahctl$ make all-arm64
 ## Usage
 
 ### ServiceRegistry availability
-To test if the ServiceRegistry is available, issue the following command (change the IP address and http/https depending on the local cloud's configuration):
+To test if the ServiceRegistry is available, issue the following command (change the IP address and HTTP/HTTPS depending on the local cloud's configuration):
 ```
 ahctl$ ./ahctl  --sr=http://192.168.11.22:8443/serviceregistry
 Calling http://192.168.11.22:8443/serviceregistry/echo
@@ -99,3 +98,4 @@ This command gets the list of all ServiceDefinitions stored in the ServiceRegist
 #### dm-echo
 This command tries to get the "Got it!" response from the DataManagers's /echo endpoint. The 
 address of the DataManager is automatically queried from the ServiceRegistry.
+
