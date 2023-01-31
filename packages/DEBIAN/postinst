@@ -1,2 +1,4 @@
 #!/bin/bash
+echo "Setting up Eclipse Arrowhead control application"
+mandb
 

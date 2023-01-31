@@ -17,6 +17,8 @@ srun:
 deb:
 	mkdir -p packages/usr/local/bin
 	cp ahctl packages/usr/local/bin/
+	mkdir -p packages/usr/local/share/man/man1/
+	cp man/ahctl.1 packages/usr/local/share/man/man1
 	dpkg-deb --build packages
 	mv packages.deb ahctl_amd64.deb
 	#mv packages.deb ahctl_arm64.deb
