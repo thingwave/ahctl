@@ -19,6 +19,8 @@ ahctl$ make all-arm64
 
 ## Usage
 
+Please that some commands require a sysop certificate when using CERTIFICATE mode!
+
 ### ServiceRegistry availability
 To test if the ServiceRegistry is available, issue the following command (change the IP address and HTTP/HTTPS depending on the local cloud's configuration):
 ```
