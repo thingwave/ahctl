@@ -89,11 +89,19 @@ Below is a list of the currently supported commands. More will be added in the f
 #### sr-echo
 This command tries to get the "Got it!" response from the ServiceRegistry's /echo endpoint.
 
-#### get-all-systems
+#### list-all-systems
 This command lists all systems stored in the ServiceRegistry.
 
-#### get-all-services
+#### list-all-services
 This command gets the list of all ServiceDefinitions stored in the ServiceRegistry.
+
+#### or-echo
+This command tries to get the "Got it!" response from the Orchestrator's /echo endpoint. The 
+address of the Orchestrator is automatically queried from the ServiceRegistry.
+
+#### au-echo
+This command tries to get the "Got it!" response from the Authorization system's /echo endpoint. The 
+address of the Authorization system is automatically queried from the ServiceRegistry.
 
 #### dm-echo
 This command tries to get the "Got it!" response from the DataManagers's /echo endpoint. The 

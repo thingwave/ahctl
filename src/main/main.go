@@ -69,8 +69,8 @@ func mainApp() int {
 	}
 
 	if *command == "sr-echo" || *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" {
-	} else if *command == "get-all-systems" {
-	} else if *command == "get-all-services" {
+	} else if *command == "list-all-systems" {
+	} else if *command == "list-all-services" {
 	} else if *command == "get-grouped" {
 	} else {
 		fmt.Printf("Unknown command: %s\n", *command)
@@ -140,7 +140,7 @@ func mainApp() int {
 		} else {
 			fmt.Println(string(data))
 		}
-	} else if *command == "get-all-systems" {
+	} else if *command == "list-all-systems" {
 		data, err := getData(client, *targetUri+"/mgmt/systems?direction=ASC&sort_field=id")
 		if err == nil {
 			var response SystemList
@@ -149,7 +149,7 @@ func mainApp() int {
 			empJSON, _ := json.MarshalIndent(response, "", "  ")
 			fmt.Println(string(empJSON))
 		}
-	} else if *command == "get-all-services" {
+	} else if *command == "list-all-services" {
 		data, err := getData(client, *targetUri+"/mgmt/services?direction=ASC&sort_field=id")
 		if err == nil {
 			//fmt.Println(data)
