@@ -32,7 +32,7 @@ Got it!
 ### Get all registered systems
 To get all registred systems from the ServiceRegistry, issue the following command:
 ```
-ahctl$ ./ahctl  --sr=http://192.168.1.10:8443/serviceregistry --cmd=get-all-systems
+ahctl$ ./ahctl  --sr=http://192.168.1.10:8443/serviceregistry --cmd=list-all-systems
 {
   "Data": [
     {
