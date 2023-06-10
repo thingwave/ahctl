@@ -183,7 +183,11 @@ func mainApp() int {
 			sreq.ServiceDefinitionRequirement = "proxy"
 		}
 
-		//sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"} //XXX add support for SECURE by auto detecting SR endpount (http vs https)
+		sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"}
+		if strings.HasPrefix(*targetUri, "https") {
+			sreq.InterfaceRequirements = []string{"HTTP-SECURE-JSON"}
+		}
+
 		var minVerReq int
 		sreq.MinVersionRequirement = &minVerReq
 		*sreq.MinVersionRequirement = 1
