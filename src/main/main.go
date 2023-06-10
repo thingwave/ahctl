@@ -82,30 +82,30 @@ func mainApp() int {
 	if *ca != "" && *cert != "" && *key != "" {
 		ok, _ := fileExists(*ca)
 		if !ok {
-			fmt.Printf("Error: ca file %s does not exist\n", *ca)
+			fmt.Printf("Error: ca file '%s' does not exist\n", *ca)
 			return -1
 		}
 		ok, _ = fileExists(*cert)
 		if !ok {
-			fmt.Printf("Error: certificate file %s does not exist\n", *cert)
+			fmt.Printf("Error: certificate file '%s' does not exist\n", *cert)
 			return -1
 		}
 		ok, _ = fileExists(*key)
 		if !ok {
-			fmt.Printf("Error: key file %s does not exist\n", *key)
+			fmt.Printf("Error: key file '%s' does not exist\n", *key)
 			return -1
 		}
 
 		caCert, err := ioutil.ReadFile(*ca)
 		if err != nil {
-			log.Fatalf("Error opening cert file %s, Error: %s", *ca, err)
+			log.Fatalf("Error opening cert file '%s', Error: %s", *ca, err)
 		}
 		caCertPool := x509.NewCertPool()
 		caCertPool.AppendCertsFromPEM(caCert)
 
 		myCert, err := tls.LoadX509KeyPair(*cert, *key)
 		if err != nil {
-			log.Fatalf("Error creating x509 keypair from client cert file %s and client key file %s", *cert, *key)
+			log.Fatalf("Error creating X.509 keypair from client cert file '%s' and client key file '%s'", *cert, *key)
 		}
 
 		t := &http.Transport{
@@ -119,8 +119,8 @@ func mainApp() int {
 		client = http.Client{Transport: t, Timeout: 5 * time.Second}
 
 		if *command == "srecho" {
-			fmt.Printf("Calling %s\n", *targetUri + "/echo")
-			data, err := getData(client, *targetUri + "/echo")
+			fmt.Printf("Calling %s\n", *targetUri+"/echo")
+			data, err := getData(client, *targetUri+"/echo")
 			if err == nil {
 				fmt.Println(string(data))
 			}
@@ -175,13 +175,15 @@ func mainApp() int {
 		var sreq ServiceQueryRequest
 		if *command == "or-echo" {
 			sreq.ServiceDefinitionRequirement = "orchestration-service"
+			//} else if *command == "or-getallstoreentries" {
+			//	sreq.ServiceDefinitionRequirement = "???"
 		} else if *command == "au-echo" {
 			sreq.ServiceDefinitionRequirement = "auth-public-key"
 		} else if *command == "dm-echo" {
 			sreq.ServiceDefinitionRequirement = "proxy"
 		}
 
-		//sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"} //XXX add support for SECURE
+		//sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"} //XXX add support for SECURE by auto detecting SR endpount (http vs https)
 		var minVerReq int
 		sreq.MinVersionRequirement = &minVerReq
 		*sreq.MinVersionRequirement = 1
@@ -219,10 +221,10 @@ func mainApp() int {
 				return -2
 			}
 
-      proto := "http"
-      if  strings.HasPrefix(*targetUri, "https") {
-        proto = "https"
-      }
+			proto := "http"
+			if strings.HasPrefix(*targetUri, "https") {
+				proto = "https"
+			}
 			target := proto + "://" + serviceQueryResponse.ServiceQueryData[0].Provider.Address + ":" + strconv.Itoa(serviceQueryResponse.ServiceQueryData[0].Provider.Port) + serviceQueryResponse.ServiceQueryData[0].ServiceUri //XXX: check if http or https!!!
 			if *command == "or-echo" {
 				target = strings.Replace(target, "/orchestration", "/echo", 1)
@@ -251,7 +253,6 @@ func ReadData2Object[T any](bytes []byte) (*T, error) {
 	return out, nil
 }
 
-//
 func getData(client http.Client, uri string) ([]byte, error) {
 	request, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
