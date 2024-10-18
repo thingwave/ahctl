@@ -101,6 +101,10 @@ This command gets the list of all ServiceDefinitions stored in the ServiceRegist
 This command tries to get the "Got it!" response from the Orchestrator's /echo endpoint. The 
 address of the Orchestrator is automatically queried from the ServiceRegistry.
 
+#### list-orchestration-rules
+This command fetches all orchestration rules from the Orchetsration system. The
+address of the Orchestrator is automatically queried from the ServiceRegistry.
+
 #### au-echo
 This command tries to get the "Got it!" response from the Authorization system's /echo endpoint. The 
 address of the Authorization system is automatically queried from the ServiceRegistry.
