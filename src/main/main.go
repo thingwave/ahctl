@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2022 ThingWave AB
+ * Copyright (c) 2022-2024 ThingWave AB
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -171,7 +171,7 @@ func mainApp() int {
 			empJSON, _ := json.MarshalIndent(response, "", "  ")
 			fmt.Println(string(empJSON))
 		}
-	} else if *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" {
+	} else if *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" || *command == "list-orchestration-rules" {
 		var sreq ServiceQueryRequest
 		if *command == "or-echo" {
 			sreq.ServiceDefinitionRequirement = "orchestration-service"
@@ -181,6 +181,8 @@ func mainApp() int {
 			sreq.ServiceDefinitionRequirement = "auth-public-key"
 		} else if *command == "dm-echo" {
 			sreq.ServiceDefinitionRequirement = "proxy"
+		} else if *command == "list-orchestration-rules" {
+			sreq.ServiceDefinitionRequirement = "TBD"
 		}
 
 		sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"}
@@ -236,6 +238,8 @@ func mainApp() int {
 				target = strings.Replace(target, "/publickey", "/echo", 1)
 			} else if *command == "dm-echo" {
 				target = strings.Replace(target, "/proxy", "/echo", 1)
+			} else if *command == "list-orchestration-rules" {
+				target = target
 			}
 
 			fmt.Printf("Calling %s\n", target)

@@ -120,3 +120,25 @@ type EntryDTO struct {
 	Value string `json:"value"`
 }
 
+
+type OrchestratorStoreListResponseDTO struct {
+	count int64  `json:"count"`
+	data []OrchestratorStoreResponseDTO `json:"data"`
+}
+
+type OrchestratorStoreResponseDTO struct {
+	Id int64 `json:"count"`
+	ServiceDefinition ServiceDefinitionDTO `json:"serviceDefinition"`
+	ConsumerSystem ProviderDTO `json:"consumerSystem"`
+	Foreign bool `json:"foreign"`
+	ProviderSystem ProviderDTO `json:"providerSystem"`
+	ProviderCloud CloudResponseDTO `json:"providerCloud"`
+	ServiceInterface InterfaceEntry `json:"serviceInterface"`
+	Priority int64 `json:"priority"`
+	Attribute map[string]string `json:"attribute"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+}
+
+type CloudResponseDTO struct {
+}
