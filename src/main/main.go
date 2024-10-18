@@ -238,7 +238,7 @@ func mainApp() int {
 				target = strings.Replace(target, "/publickey", "/echo", 1)
 			} else if *command == "dm-echo" {
 				target = strings.Replace(target, "/proxy", "/echo", 1)
-			} else if *command == "list-orchestration-rules" {
+			} else if *command == "list-orchestration-rules" { //GET or POST? depends on ServiceType!
 				target = target
 			}
 
