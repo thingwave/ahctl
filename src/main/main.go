@@ -177,12 +177,12 @@ func mainApp() int {
 			sreq.ServiceDefinitionRequirement = "orchestration-service"
 			//} else if *command == "or-getallstoreentries" {
 			//	sreq.ServiceDefinitionRequirement = "???"
+		} else if *command == "list-orchestration-rules" {
+			sreq.ServiceDefinitionRequirement = "orchestration-service"
 		} else if *command == "au-echo" {
 			sreq.ServiceDefinitionRequirement = "auth-public-key"
 		} else if *command == "dm-echo" {
 			sreq.ServiceDefinitionRequirement = "proxy"
-		} else if *command == "list-orchestration-rules" {
-			sreq.ServiceDefinitionRequirement = "TBD"
 		}
 
 		sreq.InterfaceRequirements = []string{"HTTP-INSECURE-JSON"}
@@ -234,12 +234,13 @@ func mainApp() int {
 			target := proto + "://" + serviceQueryResponse.ServiceQueryData[0].Provider.Address + ":" + strconv.Itoa(serviceQueryResponse.ServiceQueryData[0].Provider.Port) + serviceQueryResponse.ServiceQueryData[0].ServiceUri //XXX: check if http or https!!!
 			if *command == "or-echo" {
 				target = strings.Replace(target, "/orchestration", "/echo", 1)
+			} else if *command == "list-orchestration-rules" {
+				target = strings.Replace(target, "/orchestration", "/mgmt/store", 1)
 			} else if *command == "au-echo" {
 				target = strings.Replace(target, "/publickey", "/echo", 1)
 			} else if *command == "dm-echo" {
 				target = strings.Replace(target, "/proxy", "/echo", 1)
-			} else if *command == "list-orchestration-rules" { //GET or POST? depends on ServiceType!
-				target = target
+			//} else if *command == "list-orchestration-rules" { GET or POST? depends on ServiceType!
 			}
 
 			fmt.Printf("Calling %s\n", target)

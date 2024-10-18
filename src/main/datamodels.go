@@ -127,7 +127,7 @@ type OrchestratorStoreListResponseDTO struct {
 }
 
 type OrchestratorStoreResponseDTO struct {
-	Id int64 `json:"count"`
+	Id int64 `json:"id"`
 	ServiceDefinition ServiceDefinitionDTO `json:"serviceDefinition"`
 	ConsumerSystem ProviderDTO `json:"consumerSystem"`
 	Foreign bool `json:"foreign"`
@@ -141,4 +141,13 @@ type OrchestratorStoreResponseDTO struct {
 }
 
 type CloudResponseDTO struct {
+        Id int64 `json:"id"`
+        Operator string `json:"operator"`
+        Name string `json:"name"`
+        AuthenticationInfo string `json:"authenticationInfo"`
+        Secure bool `json:"secure"`
+        Neighbor bool `json:"neighbor"`
+        OwnCloud bool `json:"ownCloud"`
+        CreatedAt string `json:"createdAt"`
+        UpdatedAt string `json:"updatedAt"`
 }
